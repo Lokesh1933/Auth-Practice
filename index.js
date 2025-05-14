@@ -1,24 +1,33 @@
 import express from "express";
 import axios from "axios";
+import dotenv from 'dotenv'
+dotenv.config();
 
 const app = express();
 const port = 3000;
-const API_URL = "https://secrets-api.appbrewery.com/";
+const API_URL = process.env.API_URI
 
 //TODO 1: Fill in your values for the 3 types of auth.
-const yourUsername = "";
-const yourPassword = "";
-const yourAPIKey = "";
-const yourBearerToken = "";
+const yourUsername = process.env.USERNAME
+const yourPassword = process.env.PASSWORD
+const yourAPIKey = process.env.API_KEY
+const yourBearerToken = process.env.BEARER_TOKEN
 
 app.get("/", (req, res) => {
   res.render("index.ejs", { content: "API Response." });
 });
 
-app.get("/noAuth", (req, res) => {
+app.get("/noAuth", async (req, res) => {
   //TODO 2: Use axios to hit up the /random endpoint
   //The data you get back should be sent to the ejs file as "content"
   //Hint: make sure you use JSON.stringify to turn the JS object from axios into a string.
+  try {
+    const response = await axios.get(API_URL + "/random")
+    res.render("index.ejs",{content: JSON.stringify(response.data)}) 
+    
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
 });
 
 app.get("/basicAuth", (req, res) => {
